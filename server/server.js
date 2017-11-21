@@ -12,6 +12,7 @@ var io = socketIO(server);//
 
 const publicPath = path.join(__dirname, '../public');
 const {generateMessage} = require('./utils/message');
+const {generateLocationMessage} = require('./utils/message');
 
 
 //command to configure the middleware
@@ -39,6 +40,10 @@ io.on('connection', (socket) => {
         io.emit('newMessage', generateMessage(message.from,message.text));
         callback('This is from the server.'
         );
+    });
+
+    socket.on('createLocationMessage', (coords) => {
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
     });
 
     /* --- CLIENT DISCONNECT --- */

@@ -7,4 +7,17 @@ let generateMessage = (from, text) => {
     };
 };
 
-module.exports = {generateMessage};
+let generateLocationMessage = (from, latitude, longitude) => {
+    "use strict";
+    return {
+        from,
+        url: `https://www.google.com/maps?=${latitude},${longitude}`,
+        createdAt: new Date().toISOString()
+    };
+};
+
+
+module.exports = {
+    generateMessage,
+    generateLocationMessage
+};
