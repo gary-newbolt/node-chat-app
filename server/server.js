@@ -1,11 +1,11 @@
-require('./config/config');
+//require('./config/config');
 const path = require('path');//
 const http = require('http');//
 const socketIO = require('socket.io');//
 
 const express = require('express');//
 const app = express();//
-const port = process.env.PORT;//
+const port = process.env.PORT || 3000;//
 const server = http.createServer(app);
 const io = socketIO(server);//
 
