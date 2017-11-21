@@ -16,33 +16,28 @@ const publicPath = path.join(__dirname, '../public');
 //command to configure the middleware
 app.use(express.static(publicPath));
 
-// register event listener to watch for users.
+/* --- SERVER COMMAND TO START LISTENING --- */
 io.on('connection', (socket) => {
     "use strict";
     console.log('New user connected');
 
-    /* --- EMAIL EXAMPLE: CLIENT RECEIVE ---
-    socket.emit('newEmail', {
-        from : 'mike@example.com',
-        text: 'Hey buddy, how are you doing?',
-        createdAt: 123
-    }); */
-
     /* --- Messenger Application: RECEIVING BY CLIENT --- */
-    socket.emit('newMessage', {
-       from: 'devilDog',
-       createdAt: new Date().toISOString(),
-       text: 'Yo, ¡chicas y chicos! lets meet up at 7pm'
-    });
+    // socket.emit('newMessage', {
+    //    from: 'devilDog',
+    //    createdAt: new Date().toISOString(),
+    //    text: 'Yo, ¡chicas y chicos! lets meet up at 7pm'
+    // });
 
-    /* --- EMAIL EXAMPLE: SERVER RECEIVE ---
-    socket.on('createEmail', (newEmail) => {
-        console.log('createEmail', newEmail)
-    }); */
 
     /* --- Messenger Application: SENDING BY CLIENT --- */
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
+        io.emit('newMessage', {
+           from: message.from,
+            createdAt: new Date().toISOString(),
+           text: message.text
+
+        });
     });
 
     /* --- CLIENT DISCONNECT --- */
