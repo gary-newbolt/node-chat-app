@@ -2,12 +2,12 @@
 const path = require('path');//
 const http = require('http');//
 const socketIO = require('socket.io');//
-
 const express = require('express');//
-const app = express();//
+
+var app = express();//
 const port = process.env.PORT || 3000;//
-const server = http.createServer(app);
-const io = socketIO(server);//
+var server = http.createServer(app);
+var io = socketIO(server);//
 
 
 const publicPath = path.join(__dirname, '../public');
