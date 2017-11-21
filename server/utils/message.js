@@ -11,7 +11,7 @@ let generateLocationMessage = (from, latitude, longitude) => {
     "use strict";
     return {
         from,
-        url: `https://www.google.com/maps?=${latitude},${longitude}`,
+        url: `https://www.google.com/maps?q=${latitude},${longitude}`,
         createdAt: new Date().toISOString()
     };
 };

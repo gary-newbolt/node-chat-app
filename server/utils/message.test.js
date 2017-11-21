@@ -25,7 +25,7 @@ describe('generateLocationMessage', () => {
         const latitude = 1;
         const from = 'Gary';
 
-        let url = `https://www.google.com/maps?=${latitude},${longitude}`;
+        let url = `https://www.google.com/maps?q=${latitude},${longitude}`;
         let message = generateLocationMessage(from, latitude, longitude);
 
         expect(typeof message).toBe('object');
