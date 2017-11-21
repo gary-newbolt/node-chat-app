@@ -11,6 +11,7 @@ var io = socketIO(server);//
 
 
 const publicPath = path.join(__dirname, '../public');
+const {generateMessage} = require('./utils/message');
 
 
 //command to configure the middleware
@@ -21,17 +22,8 @@ io.on('connection', (socket) => {
     "use strict";
 
     console.log('New user connected');
-    socket.emit('welcomeMessage', {
-        createdAt: new Date().toISOString(),
-        from: 'Admin',
-        text: 'Welcome to the chat app.'
-    });
-    
-    socket.broadcast.emit('enterNewUser', {
-        createdAt: new Date().toISOString(),
-        from: 'Admin',
-        text: 'A new user has joined the chat.'
-    });
+    socket.emit('welcomeMessage', generateMessage('Admin','Welcome to the chat app'));
+    socket.broadcast.emit('enterNewUser', generateMessage('Admin','A new user has joined the chat'));
 
     /* --- Messenger Application: RECEIVING BY CLIENT --- */
     // socket.emit('newMessage', {
@@ -44,15 +36,7 @@ io.on('connection', (socket) => {
     /* --- Messenger Application: SENDING BY CLIENT --- */
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
-        io.emit('newMessage', {
-           from: message.from,
-           createdAt: new Date().toISOString(),
-           text: message.text
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().toISOString()
-        });
+        io.emit('newMessage', generateMessage(message.from,message.text));
     });
 
     /* --- CLIENT DISCONNECT --- */
