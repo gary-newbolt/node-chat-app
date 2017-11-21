@@ -22,8 +22,8 @@ io.on('connection', (socket) => {
     "use strict";
 
     console.log('New user connected');
-    socket.emit('welcomeMessage', generateMessage('Admin','Welcome to the chat app'));
-    socket.broadcast.emit('enterNewUser', generateMessage('Admin','A new user has joined the chat'));
+    socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'));
+    socket.broadcast.emit('newMessage', generateMessage('Admin','A new user has joined the chat'));
 
     /* --- Messenger Application: RECEIVING BY CLIENT --- */
     // socket.emit('newMessage', {
@@ -34,9 +34,11 @@ io.on('connection', (socket) => {
 
 
     /* --- Messenger Application: SENDING BY CLIENT --- */
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         io.emit('newMessage', generateMessage(message.from,message.text));
+        callback('This is from the server.'
+        );
     });
 
     /* --- CLIENT DISCONNECT --- */
