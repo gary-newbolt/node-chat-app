@@ -10,7 +10,7 @@ describe('generateMessage', () => {
         const text = 'Hey buddies, what up with ya\'ll??';
         let message = generateMessage(from, text);
 
-        expect(typeof message.createdAt).toBe('string');
+        expect(typeof message.createdAt).toBe('number');
         expect(message).toInclude({
             text,
             from
