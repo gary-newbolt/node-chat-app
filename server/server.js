@@ -4,7 +4,7 @@ const http = require('http');//
 const socketIO = require('socket.io');//
 const express = require('express');//
 
-var app = express();//
+const app = express();//
 const port = process.env.PORT;//
 var server = http.createServer(app);
 var io = socketIO(server);//
@@ -13,6 +13,10 @@ var io = socketIO(server);//
 const publicPath = path.join(__dirname, '../public');
 const {generateMessage} = require('./utils/message');
 const {generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
+
+var users = new Users();
 
 
 //command to configure the middleware
@@ -22,11 +26,30 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     "use strict";
 
-    console.log('New user connected');
-    socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'));
-    socket.broadcast.emit('newMessage', generateMessage('Admin','A new user has joined the chat'));
 
-    /* --- Messenger Application: RECEIVING BY CLIENT --- */
+    /* --- STRING CHECK FOR LOGIN PAGE --- */
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            return callback('Name and room name are required.')
+        }
+        // JOINS room
+        socket.join(params.room);
+        users.removeUser(socket.id);
+        users.addUser(socket.id, params.name, params.room);
+
+        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+
+        // CONNECTION messages
+        socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin',`${params.name} has joined the chat`));
+        callback();
+    });
+
+
+
+
+
+    /* --- Messenger Application: RECEIVING BY CLIENT --- RETIRED */
     // socket.emit('newMessage', {
     //    from: 'devilDog',
     //    createdAt: new Date().toISOString(),
@@ -42,13 +65,21 @@ io.on('connection', (socket) => {
         );
     });
 
+
+    /* --- LOCATION Messenger Application: SENDING BY CLIENT --- */
     socket.on('createLocationMessage', (coords) => {
         io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
     });
 
+
     /* --- CLIENT DISCONNECT --- */
     socket.on('disconnect', () => {
-        console.log('Client disconnected.');
+        let user = users.removeUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left the chat. `));
+        }
     });
 });
 
